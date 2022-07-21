@@ -3,6 +3,7 @@
 
 #include<stdlib.h>
 #include<stdbool.h>
+#include<string.h>
 #define fsize(f)                                                               \
     ({                                                                         \
         int size;                                                              \
@@ -22,4 +23,5 @@
     })
 #define loadstatus(s) (s == true ? "Successfully!" : "Failed!")
 #define shadersize(a, n)  (sizeof(a) / sizeof(a[n]))
+#define aliasdirexist(d) ((strcmp(".", d) == 0) || (strcmp("..", d) == 0) ? false : true)
 #endif /* _UTIL_H */
