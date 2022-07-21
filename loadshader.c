@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -13,6 +14,8 @@
 extern bool loadshader(const char *file);
 extern bool shadercache(const char *shadername);
 extern bool removeshader(const char *shadername);
+extern void listshaders(void);
+extern int installedsize(void);
 extern char *path_dst(void);
 
 const char help_msg[] = "loadshader.c [OPTION]... [FILE]...\n "
@@ -20,6 +23,7 @@ const char help_msg[] = "loadshader.c [OPTION]... [FILE]...\n "
                         "-a  --authors\tShader authors\n "
                         "-r  --remove\tRemove Shader\n "
                         "-f  --file\tLoad shader from file\n "
+                        "-i  --installed\tList installed shaders\n "
                         "-c  --cache\tLoad shader from program cache\n "
                         "-l  --list\tList shader cache\n";
 
@@ -56,6 +60,10 @@ int main(int argc, char **argv) {
         } else if ((strcmp(argv[size], "-h") == 0) ||
                    strcmp(argv[size], "--help") == 0) {
             printf("%s", help_msg);
+            exit(EXIT_SUCCESS);
+        } else if (strcmp(argv[size], "-i") == 0 || strcmp(argv[size], "--installed") == 0) {
+            printf("Installed shaders: (%d)\n", installedsize());
+            listshaders();
             exit(EXIT_SUCCESS);
         } else if ((strcmp(argv[size], "-r") == 0) ||
                    strcmp(argv[size], "--remove") == 0) {
@@ -192,6 +200,7 @@ bool removeshader(const char *shadername) {
             exit(EXIT_FAILURE);
         }
     }
+    free(path);
     return true;
 }
 
@@ -202,4 +211,38 @@ char *path_dst(void) {
     strncat(path_dst, getlogin(), PATH_MAX - strlen(getlogin()) + 1);
     strncat(path_dst, "/.minecraft/shaderpacks/", 25);
     return path_dst;
+}
+
+void listshaders(void) {
+    DIR *d;
+    struct dirent *e;
+    char *path = path_dst();
+    d = opendir(path);
+    while ((e = readdir(d)) != NULL) {
+        if (strcmp(e -> d_name, ".") == 0 || strcmp(e -> d_name, "..") == 0) {
+            continue;
+        } else {
+            printf("  %s\n", e -> d_name);
+        }
+    }
+    closedir(d);
+    free(path);
+}
+
+int installedsize(void) {
+    DIR *d;
+    struct dirent *e;
+    char *path = path_dst();
+    d = opendir(path);
+    
+    register int i = 0;
+    while ((e = readdir(d)) != NULL) {
+        if (strcmp(e -> d_name, ".") == 0 || strcmp(e -> d_name, "..") == 0) {
+            continue;
+        } else {
+            i++;
+        }
+    }
+    free(path);
+    return i;
 }
