@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
-#include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,7 +9,6 @@
 #include "shadercache.h"
 #include "util.h"
 
-// function definition for loadshader function
 extern bool loadshader(const char *file);
 extern bool shadercache(const char *shadername);
 extern bool removeshader(const char *shadername);
@@ -28,13 +26,13 @@ const char help_msg[] = "loadshader.c [OPTION]... [FILE]...\n "
                         "-l  --list\tList shader cache\n";
 
 //TODO: generate authors automatically, this will do for now.
-const char authors[] = "Shader authors\n "
-                       " BSL_v8.1.03              (https://minecraftshader.com/bsl-shaders)                         ->  @ capttatsu\n "
-                       " CompShaders_v4.5         (https://minecraftshader.com/complementary-shaders)               ->  @ EminGTR\n "
-                       " SEUSRenewed_v1.0.1       (https://minecraftshader.com/sonic-ethers-unbelievable-shaders)   ->  @ Sonic Ether\n "
-                       " LaglessShaders_v1.10.2   (https://minecraftshader.com/lagless-shaders/)                    ->  @ unknown\n "
-                       " DrDestensShaders_v1.5.7  (https://minecraftshader.com/drdestens-shaders/)                  ->  @ DrDestens\n "
-                       " TrilitonShaders_v8       (https://minecraftshader.com/triliton-shaders/)                   ->  @ Triliton\n";
+const char authors[] = "Shader authors:\n "
+                       " BSL_v8.1.03              (\033[4mhttps://minecraftshader.com/bsl-shaders\033[0m)                         ->  @ capttatsu\n "
+                       " CompShaders_v4.5         (\033[4mhttps://minecraftshader.com/complementary-shaders\033[0m)               ->  @ EminGTR\n "
+                       " SEUSRenewed_v1.0.1       (\033[4mhttps://minecraftshader.com/sonic-ethers-unbelievable-shaders\033[0m)   ->  @ Sonic Ether\n "
+                       " LaglessShaders_v1.10.2   (\033[4mhttps://minecraftshader.com/lagless-shaders\033[0m)                     ->  @ unknown\n "
+                       " DrDestensShaders_v1.5.7  (\033[4mhttps://minecraftshader.com/drdestens-shaders\033[0m)                   ->  @ DrDestens\n "
+                       " TrilitonShaders_v8       (\033[4mhttps://minecraftshader.com/triliton-shaders\033[0m)                    ->  @ Triliton\n";
 
 int main(int argc, char **argv) {
     if (argc <= 1) {
@@ -54,25 +52,29 @@ int main(int argc, char **argv) {
                 exit(EXIT_SUCCESS);
             }
 
-        } else if (strcmp(argv[size], "-a") == 0 || strcmp(argv[size], "--authors") == 0) {
+        } else if ((strcmp(argv[size], "-a") == 0) ||
+                   strcmp(argv[size], "--authors") == 0) {
+           // display the authors of the shaders, credits
            printf("%s", authors);
            exit(EXIT_SUCCESS);
         } else if ((strcmp(argv[size], "-h") == 0) ||
                    strcmp(argv[size], "--help") == 0) {
+            // display help message  
             printf("%s", help_msg);
             exit(EXIT_SUCCESS);
-        } else if (strcmp(argv[size], "-i") == 0 || strcmp(argv[size], "--installed") == 0) {
+        } else if ((strcmp(argv[size], "-i") == 0) ||
+                   strcmp(argv[size], "--installed") == 0) {
+            // list the currently installed shaders
             printf("Installed shaders: (%d)\n", installedsize());
             listshaders();
             exit(EXIT_SUCCESS);
         } else if ((strcmp(argv[size], "-r") == 0) ||
                    strcmp(argv[size], "--remove") == 0) {
+            // remove shader from install location
             removeshader(argv[size + 1]);
             printf("Removed shader %s\n", argv[size + 1]);
             exit(EXIT_SUCCESS);
-        }
-
-        else if ((strcmp(argv[size], "-c") == 0) ||
+        } else if ((strcmp(argv[size], "-c") == 0) ||
                  strcmp(argv[size], "--cache") == 0) {
             // load shader cache stored in bin directory
             for (int i = size + 1; i < argc; i++) {
@@ -107,7 +109,7 @@ int main(int argc, char **argv) {
 }
 
 bool loadshader(const char *file) {
-    // Create a clone of the file and store in a buffer
+    // create a 1:1 copy of the shader and load from users current directory
     FILE *stream = fopen(file, "rb");
     loadfail(stream);
 
@@ -143,7 +145,7 @@ bool loadshader(const char *file) {
 }
 
 bool shadercache(const char *shadername) {
-    // load shader from the cache directory
+    // create 1:1 copy of shader and load shader from the cache directory
     char *path = (char *)malloc(sizeof(char) * PATH_MAX);
     char *path_dst = (char *)malloc(sizeof(char) * PATH_MAX);
     strncpy(path, "shaders/", 9);
@@ -153,8 +155,9 @@ bool shadercache(const char *shadername) {
     strncat(path_dst, "/.minecraft/shaderpacks/", 25);
 
     int file_len = strlen(shadername) + 1;
-    for (unsigned long int i = 0; i < shadersize(shaders, InternalName);
-         i++) {
+    for (unsigned long int i = 0; i < shadersize(shaders, InternalName); i++) {
+        // iterate through the shader array and copy the destination name to path_dst
+        // path_dst() funcion unused here since the local path_dst gets modified.
         if (strcmp(shadername, shaders[i][InternalName]) == 0) {
             strncat(path, shaders[i][ShaderCacheName],
                     PATH_MAX - strlen(shaders[i][ShaderCacheName]) + 1);
@@ -184,10 +187,10 @@ bool shadercache(const char *shadername) {
 }
 
 bool removeshader(const char *shadername) {
+    // remove any given shader from default install location
     char *path = path_dst();
 
-    for (unsigned long int i = 0;
-         i < shadersize(shaders, InternalName); i++) {
+    for (unsigned long int i = 0; i < shadersize(shaders, InternalName); i++) {
         if (strcmp(shadername, shaders[i][InternalName]) == 0) {
             strncat(path, shaders[i][ShaderCacheName],
                     PATH_MAX - strlen(shaders[i][ShaderCacheName]));
@@ -205,6 +208,7 @@ bool removeshader(const char *shadername) {
 }
 
 char *path_dst(void) {
+    // return the destination path, path_dst
     char *path_dst = (char *)malloc(sizeof(char) * PATH_MAX);
 
     strncpy(path_dst, "/home/", 7);
@@ -214,22 +218,25 @@ char *path_dst(void) {
 }
 
 void listshaders(void) {
+    // list the shader install location
     DIR *d;
     struct dirent *e;
     char *path = path_dst();
     d = opendir(path);
     while ((e = readdir(d)) != NULL) {
-        if (strcmp(e -> d_name, ".") == 0 || strcmp(e -> d_name, "..") == 0) {
+        //ignore "." or ".." directories
+        if (aliasdirexist(e -> d_name) == 0) {
             continue;
         } else {
             printf("  %s\n", e -> d_name);
-        }
+        } 
     }
     closedir(d);
     free(path);
 }
 
 int installedsize(void) {
+    // get the current size of files in the install location
     DIR *d;
     struct dirent *e;
     char *path = path_dst();
@@ -237,7 +244,8 @@ int installedsize(void) {
     
     register int i = 0;
     while ((e = readdir(d)) != NULL) {
-        if (strcmp(e -> d_name, ".") == 0 || strcmp(e -> d_name, "..") == 0) {
+        //ignore "." or ".." directories
+        if (aliasdirexist(e -> d_name) == 0) {
             continue;
         } else {
             i++;
