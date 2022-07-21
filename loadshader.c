@@ -185,8 +185,6 @@ bool shadercache(const char *shadername) {
 
 bool removeshader(const char *shadername) {
     // remove any given shader from default install location
-    // char *path = path_dst();
-
     for (unsigned long int i = 0; i < shadersize(shaders, InternalName); i++) {
         char *path = path_dst();
         if (strcmp(shadername, shaders[i][InternalName]) == 0) {
@@ -200,13 +198,7 @@ bool removeshader(const char *shadername) {
         } else {
             continue;
         }
-        /*printf("%s\n", path);
-        if (remove(path) != 0) {
-            printf("Failed to remove shader %s\n", shadername);
-            exit(EXIT_FAILURE);
-        }*/
     }
-    //free(path);
     return true;
 }
 
