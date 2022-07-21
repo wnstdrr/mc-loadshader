@@ -21,12 +21,12 @@ enum _shader_reference {
 } _shader_reference;
 
 const char *shaders[][2] = {
-    {"BSL_v8.1.03", "BSL_v8.1.03.zip"},
-    {"CompShaders_v4.5", "ComplementaryShaders_v4.5.zip"},
-    {"SEUSRenewed_v1.0.1", "SEUS-Renewed-v1.0.1.zip"},
-    {"LaglessShaders_v1.10.2", "Lagless-Shaders-Standard_1.10.2.zip"},
+/*   InternalName               ShaderCacheName*/
+    {"BSL_v8.1.03",             "BSL_v8.1.03.zip"},
+    {"CompShaders_v4.5",        "ComplementaryShaders_v4.5.zip"},
+    {"SEUSRenewed_v1.0.1",      "SEUS-Renewed-v1.0.1.zip"},
+    {"LaglessShaders_v1.10.2",  "Lagless-Shaders-Standard_1.10.2.zip"},
     {"DrDestensShaders_v1.5.7", "DrDestens-Shaders_v1.5.7.zip"},
-    {"TrilitonShaders_v8", "TrilitonShaders_v8.zip"}
+    {"TrilitonShaders_v8",      "TrilitonShaders_v8.zip"}
 };
-
 #endif /* _SHADERCACHE_H */
