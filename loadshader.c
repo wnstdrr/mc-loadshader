@@ -40,6 +40,8 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     }
     // iterate through command line arguments
+    // NOTE: not all arguments end in exit(EXIT_SUCCESS) / exit(EXIT_FAILURE)
+    // This is to allow for multiple arguments to be ran in conjunction.
     register int size;
     bool load_status;
     for (size = 1; size < argc; size++) {
@@ -49,14 +51,12 @@ int main(int argc, char **argv) {
                 load_status = loadshader(argv[i]);
                 printf("Shader %s Loaded? %s\n", argv[i],
                        loadstatus(load_status));
-                exit(EXIT_SUCCESS);
             }
 
         } else if ((strcmp(argv[size], "-a") == 0) ||
                    strcmp(argv[size], "--authors") == 0) {
            // display the authors of the shaders, credits
            printf("%s", authors);
-           exit(EXIT_SUCCESS);
         } else if ((strcmp(argv[size], "-h") == 0) ||
                    strcmp(argv[size], "--help") == 0) {
             // display help message  
@@ -67,25 +67,23 @@ int main(int argc, char **argv) {
             // list the currently installed shaders
             printf("Installed shaders: (%d)\n", installedsize());
             listshaders();
-            exit(EXIT_SUCCESS);
         } else if ((strcmp(argv[size], "-r") == 0) ||
                    strcmp(argv[size], "--remove") == 0) {
             // remove shader from install location
-            removeshader(argv[size + 1]);
-            printf("Removed shader %s\n", argv[size + 1]);
-            exit(EXIT_SUCCESS);
+            for (int i = size + 1; i < argc; i++) {
+                removeshader(argv[i]);
+                printf("Removed shader %s\n", argv[i]);
+            }
         } else if ((strcmp(argv[size], "-c") == 0) ||
                  strcmp(argv[size], "--cache") == 0) {
-            // load shader cache stored in bin directory
+            // load shader cache stored in bin directory 
             for (int i = size + 1; i < argc; i++) {
-                for (long unsigned int j = 0;
-                     j < shadersize(shaders, InternalName); j++) {
-                    if (strcmp(argv[size + 1], shaders[j][InternalName]) == 0) {
+                for (long unsigned int j = 0; j < shadersize(shaders, InternalName); j++) {
+                    if (strcmp(argv[i], shaders[j][InternalName]) == 0) {
                         load_status = shadercache(shaders[j][InternalName]);
-                        printf("Shader %s Loaded (cache)? %s\n",
+                        printf("Shader %s Loaded (cache)? %s\n\n",
                                shaders[j][InternalName],
                                loadstatus(load_status));
-                        exit(EXIT_SUCCESS);
                     } else {
                         continue;
                     }
@@ -102,7 +100,6 @@ int main(int argc, char **argv) {
                 printf("  %-25s ->  %s\n", shaders[i][InternalName],
                        shaders[i][ShaderCacheName]);
             }
-            exit(EXIT_SUCCESS);
         }
     }
     return EXIT_SUCCESS;
@@ -188,22 +185,28 @@ bool shadercache(const char *shadername) {
 
 bool removeshader(const char *shadername) {
     // remove any given shader from default install location
-    char *path = path_dst();
+    // char *path = path_dst();
 
     for (unsigned long int i = 0; i < shadersize(shaders, InternalName); i++) {
+        char *path = path_dst();
         if (strcmp(shadername, shaders[i][InternalName]) == 0) {
             strncat(path, shaders[i][ShaderCacheName],
                     PATH_MAX - strlen(shaders[i][ShaderCacheName]));
+            if (remove(path) != 0) {
+                printf("%s\nFailed to remove shader %s\n", path, shadername);
+                exit(EXIT_FAILURE);
+            }
+            free(path);
         } else {
             continue;
         }
-        printf("%s\n", path);
+        /*printf("%s\n", path);
         if (remove(path) != 0) {
             printf("Failed to remove shader %s\n", shadername);
             exit(EXIT_FAILURE);
-        }
+        }*/
     }
-    free(path);
+    //free(path);
     return true;
 }
 
