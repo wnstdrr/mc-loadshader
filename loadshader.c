@@ -17,13 +17,13 @@ extern int installedsize(void);
 extern char *path_dst(void);
 
 const char help_msg[] = "loadshader.c [OPTION]... [FILE]...\n "
-                        "-h  --help\tDisplay this help message\n "
-                        "-a  --authors\tShader authors\n "
-                        "-r  --remove\tRemove Shader\n "
-                        "-f  --file\tLoad shader from file\n "
+                        "-h  --help\t\tDisplay this help message\n "
+                        "-a  --authors\t\tShader authors\n "
+                        "-r  --remove\t \tRemove Shader\n "
+                        "-f  --file\t\tLoad shader from file\n "
                         "-i  --installed\tList installed shaders\n "
-                        "-c  --cache\tLoad shader from program cache\n "
-                        "-l  --list\tList shader cache\n";
+                        "-c  --cache\t\tLoad shader from program cache\n "
+                        "-l  --list\t\tList shader cache\n";
 
 //TODO: generate authors automatically, this will do for now.
 const char authors[] = "Shader authors:\n "
