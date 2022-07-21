@@ -62,7 +62,7 @@ Example -r --remove:
 
 You can list the currently installed shaders that are located in the default directory for shaders
 using the -i or --installed options. You can also list the cache using -c or --cache options. The cache
-options are hard coded to accept spesfic name or aliases for shaders, more can be appended by modifiying the
+options are hard coded to accept specific name or aliases for shaders, more can be appended by modifiying the
 shadercache.h source file.
 
 Example -i --installed:
