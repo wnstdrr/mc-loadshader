@@ -1,10 +1,10 @@
 #include <errno.h>
 #include <fcntl.h>
-#include <limits.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <linux/limits.h>
 
 #include "shadercache.h"
 #include "util.h"
@@ -116,7 +116,7 @@ bool loadshader(const char *file) {
 
     // read content into buffer and close stream
     fread(&content, file_size + 1, 1, stream);
-    pclose(stream);
+    fclose(stream);
     // create a new file stream for writing
     char *path = (char *)malloc(sizeof(char) * PATH_MAX);
 
@@ -136,7 +136,7 @@ bool loadshader(const char *file) {
 
     // write the content to the new file
     fwrite(&content, file_size, 1, stream_w);
-    pclose(stream_w);
+    fclose(stream_w);
     free(path);
     return true;
 }
@@ -169,14 +169,14 @@ bool shadercache(const char *shadername) {
     char content[file_size + 1];
 
     fread(&content, file_size + 1, 1, stream);
-    pclose(stream);
+    fclose(stream);
 
     creat(path_dst, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     FILE *stream_w = fopen(path_dst, "wb");
     loadfail(stream_w);
 
     fwrite(&content, file_size, 1, stream_w);
-    pclose(stream_w);
+    fclose(stream_w);
 
     free(path);
     free(path_dst);
