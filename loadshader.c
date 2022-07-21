@@ -71,8 +71,17 @@ int main(int argc, char **argv) {
                    strcmp(argv[size], "--remove") == 0) {
             // remove shader from install location
             for (int i = size + 1; i < argc; i++) {
-                removeshader(argv[i]);
-                printf("Removed shader %s\n", argv[i]);
+                // continue over other command line arguments
+                // fixes some output when used with -i or --installed
+                bool removed;
+                if (argv[i][0] == '-') {
+                    continue;
+                } else {
+                    removed = removeshader(argv[i]);
+                    if (removed) {
+                        printf("Removed shader %s\n", argv[i]);
+                    }
+                }
             }
         } else if ((strcmp(argv[size], "-c") == 0) ||
                  strcmp(argv[size], "--cache") == 0) {
@@ -192,7 +201,7 @@ bool removeshader(const char *shadername) {
                     PATH_MAX - strlen(shaders[i][ShaderCacheName]));
             if (remove(path) != 0) {
                 printf("%s\nFailed to remove shader %s\n", path, shadername);
-                exit(EXIT_FAILURE);
+                return false;
             }
             free(path);
         } else {
