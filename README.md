@@ -9,7 +9,7 @@ To install mc-loadshader first clone this repository
 git clone "https://github.com/wnstdrr/mc-loadshader"
 ```
 
-Next make sure you have `make` installed. To build from source
+Next make sure you have `make`, `gcc`, or `g++` (if you want a cpp compatiable file) installed. To build from source
 in the mc-loadshader directory run `make` and you will be given
 and executable named `mc-loadshader`.
 
